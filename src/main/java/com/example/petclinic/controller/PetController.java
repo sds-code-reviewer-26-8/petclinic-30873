@@ -5,10 +5,13 @@ import com.example.petclinic.controller.response.PetDto;
 import com.example.petclinic.controller.response.PetTypeDto;
 import com.example.petclinic.entity.Pet;
 import com.example.petclinic.service.PetService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,8 +27,15 @@ public class PetController {
         }
 
         @GetMapping
-        public List<PetDto> list() {
-                return petService.findPets().stream()
+        public List<PetDto> list(@RequestParam(required = false) Integer year,
+                        @RequestParam(required = false) String type) {
+                List<Pet> pets;
+                try {
+                        pets = petService.findPets(year, type);
+                } catch (IllegalArgumentException e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+                }
+                return pets.stream()
                                 .map(p -> {
                                         PetTypeDto petType = new PetTypeDto(
                                                         p.getType().getId(),
