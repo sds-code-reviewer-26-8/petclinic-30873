@@ -3,10 +3,13 @@ package com.example.petclinic.controller;
 import com.example.petclinic.controller.response.OwnerDto;
 import com.example.petclinic.entity.Owner;
 import com.example.petclinic.service.OwnerService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,8 +25,14 @@ public class OwnerController {
     }
 
     @GetMapping
-    public List<OwnerDto> list() {
-        return ownerService.findOwners().stream()
+    public List<OwnerDto> list(@RequestParam(name = "lastName", required = false) String lastName) {
+        List<Owner> owners;
+        try {
+            owners = ownerService.findOwners(lastName);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+        return owners.stream()
                 .map(o -> new OwnerDto(
                         o.getId(),
                         o.getFirstName(),
