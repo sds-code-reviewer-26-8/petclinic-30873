@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface PetRepository extends JpaRepository<Pet, Long> {
 
-    List<Pet> findByBirthDateAfterAndTypeName(LocalDateTime birthDate, String typeName);
+    List<Pet> findByBirthDateAfterAndTypeNameIgnoreCase(LocalDateTime birthDate, String typeName);
 }

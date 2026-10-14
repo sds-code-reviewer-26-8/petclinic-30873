@@ -30,7 +30,7 @@ public class PetService {
         if (year == null || type == null) {
             throw new IllegalArgumentException("year and type must be provided together");
         }
-        return petRepository.findByBirthDateAfterAndTypeName(LocalDateTime.now().minusYears(year), type);
+        return petRepository.findByBirthDateAfterAndTypeNameIgnoreCase(LocalDateTime.now().minusYears(year), type);
     }
 
     public Pet findPet(Long petId) {
